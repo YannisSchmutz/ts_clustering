@@ -1,0 +1,322 @@
+---
+title: "Clustering of Stock Prices"
+author: "Vidushi Bigler-Maillart"
+date: "05/05/2019"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+# set global options for knitr
+knitr::opts_chunk$set(echo = TRUE)
+
+# uncomment the following code line to save your the results of your code, 
+# so it doen't need to be run every time
+knitr::opts_chunk$set(cache = TRUE) 
+
+# load the packages that we need
+
+library(ggplot2)
+library(lubridate)
+library(openxlsx)
+library(tidyverse)
+library(magrittr)
+library(TSclust)
+library(dtwclust)
+```
+
+
+### 1. Read and clean the data
+
+This file gives us extra informations about the companies. 
+
+```{r read_data_info_file}
+infos <- read.xlsx("SP500_Infos.xlsx") # read the info file
+head(infos)                            # get the first six lines with head
+summary(infos)                         # get a summary
+str(infos)                             # Compactly Display the Structure of an Arbitrary R Object
+```
+
+This is the time series data that we would like to cluster.
+
+```{r read_data}
+# do the same for the stock prices
+stocks <- read.xlsx("SP500_Stock_Prices.xlsx")
+head(stocks)
+summary(stocks)
+str(stocks)
+```
+
+The first thing we see is that the date is in the wrong format. 
+Check out the excel file - we should basically get the same date as the date in the excel file.  
+
+```{r convert_date}
+# I take a small part of the data and try to find the correct way of converting the 
+# date time. This is a messy step with trial and error. 
+
+temp <- head(stocks)
+temp$Date # the first 6 measurements
+#as.Date(temp$Date, format="%d/%m%Y") # doesn't work 
+as.Date(temp$Date, origin = "1899-12-30", format="%Y-%m-%d") 
+# This was a messy process, with a lot of help from stack overflow. 
+# But I got this working - yeehhhh me!
+```
+
+```{r apply_convert_date}
+stocks$Date <- as.Date(stocks$Date, origin = "1899-12-30", format="%Y-%m-%d") 
+head(stocks) # check with excel file to see if everything is as expected
+tail(stocks) # check last few measurements as well 
+```
+
+Generally, I save the data at this point or cache my code chunks. 
+
+### 2. Clean the data 
+
+If I was doing this analysis for a company (and getting paid for it), I would 
+do a proper cleaning. But to simplify things, I would simply kick out 
+companies with missing data. Also, check the length of the time series for each company. 
+Some algorithms do not work with time series of unequal lengths. 
+
+```{r data_cleaning1}
+# get the number of missing values
+sum(is.na(stocks$Close))  
+# all good for our case
+```
+
+```{r data_cleaning2}
+#table(stocks$Symbol) # get the length of data for each company
+
+temp <- data.frame(table(stocks$Symbol))
+int <- which(temp$Freq < max(temp$Freq))
+temp[int, ]
+remove_companys <- temp$Var1[int]
+# keep Symbols that are not in list 
+stocks %<>% filter(!(Symbol %in% remove_companys)) # the exclamation mark is for negation
+# %<>% helps build pipes - package magrittr 
+# I'll show you how this works if you like
+```
+
+```{r recheck}
+# check again to be sure 
+temp <- data.frame(table(stocks$Symbol))
+which(temp$Freq < max(temp$Freq))
+```
+
+
+Also I save the columns Symbols, Date and Close 
+(the closing price of the stock on a particular day) in a new data frame. 
+I won't be clustering anything else, and don't want to carry these columns around. 
+
+```{r kill_data}
+# select the columns that you need
+stocks_close <- stocks %>% select(Symbol, Date, Close) 
+# %>% helps build pipes - package magrittr 
+# I'll show you how this works if you like
+```
+
+### 3. Preprocess the data
+
+We are dealing with many kinds of companies with varing market volumes as seen in the following 
+plot. The closing price of the stocks are depicted here as function of time. 
+
+```{r different market volumes}
+
+ggplot(data=stocks_close,aes(x=Date,y=Close))+geom_line(aes(colour=Symbol)) + 
+  theme(legend.position="none") +   
+  xlab("date") + ylab("closing stock price")
+
+```
+
+We need to normalise and standardize the data in order to compare the different companies with 
+each other. There are several ways of doing this - 
+for each time series I subtract the mean and divide by the respective standard deviation.
+
+
+```{r normalised data}
+# normalized stock price
+stocks_close %<>% group_by(Symbol) %>% 
+  mutate(Normalised_price = (Close - mean(Close))/sd(Close)) 
+# %<>% helps build pipes - package magrittr 
+# I'll show you how this works if you like
+```
+
+I just keep the columns Symbols, Date and Normalised_price
+(the normalised closing price of the stock on a particular day) 
+because I need to change the format of the data again. 
+For clustering I need a wide instead of a long format. 
+
+```{r keep_normalised_prices}
+# select the columns that you need
+stocks_close %<>%  select(Symbol, Date, Normalised_price) 
+head(stocks_close)
+```
+
+
+```{r plot normalised data}
+
+ggplot(data=stocks_close,aes(x=Date,y=Normalised_price)) + 
+  geom_line(aes(colour=Symbol)) + 
+  theme(legend.position="none") +   
+  xlab("date") + ylab("standadized stock price")
+
+```
+
+You can clearly see the effect of COVID-19. 
+
+```{r small example data set}
+# To show you how you can create data in a wide format
+# I create a small example data set
+temp <- head(stocks_close, 3)
+temp <- rbind(temp, tail(stocks_close, 3))
+temp
+temp %>% spread(., key = Symbol, value=Normalised_price)
+```
+
+
+```{r wide data}
+# change format of data for clustering with the package TSClust
+stocks_wide <- stocks_close  %>% spread(., key = Symbol, value=Normalised_price)
+head(stocks_wide, 3)
+```
+
+Remove the date column and convert to a matrix because the 
+package TSclust expects this format. 
+Also need to transpose because diss() expects data to be along rows.
+
+```{r remove the date}
+temp <- data.frame(stocks_wide) %>% select(-Date)
+stocks_matrix <- t(as.matrix(temp))
+```
+
+So finally we are ready for the fun part - the clustering!
+
+### 4. Cluster the data
+
+#### Euclidean distance matrix
+
+Let's start with the simple euclidean distance matrix. 
+
+```{r euclidean distance matrix}
+# get the euclidean distance matrix and visualise it
+diss_mat_eucl <- diss(stocks_matrix, METHOD="EUCL")
+summary(diss_mat_eucl)
+```
+
+Let's do a hierarchical clustering with average linkage as an examle. 
+
+```{r hierarchical clustering}
+
+# get the clusters with hierarchical clustering and average linkage
+hc_eucl_cluster <- hclust(diss_mat_eucl, method="average")
+
+# Convert hclust object into a dendrogram and plot
+hcd <- as.dendrogram(hc_eucl_cluster)
+
+# plot, remove labels
+plot(hcd, ylab = "Height", leaflab = "none")
+
+```
+
+
+Let's choose the number of clusters to be 10 and plot the data for each cluster. 
+
+```{r get_cluster data}
+# cut the dendogram to get 10 clusters
+cut_clus = cutree(hc_eucl_cluster, 10)
+
+# make a data frame out of this information
+cluster_data10 <- data.frame(Symbol = rownames(stocks_matrix), Cluster = cut_clus)
+head(cluster_data10)
+
+# join the information to the stocks data set
+stocks_clust <- left_join(stocks_close, cluster_data10, by = "Symbol")
+
+# plot
+ggplot(data=stocks_clust, aes(x=Date, y=Normalised_price)) + 
+  geom_line(aes(colour=Symbol)) + facet_wrap(~Cluster) +
+  theme(legend.position="none") +   
+  xlab("date") + ylab("standadized stock price")
+
+```
+
+
+We don't get a very good clustering, unfortunately as can be seen visually. 
+The clusters are unbalanced, two clusters contain most of the data.
+Let's try another distance measure, namely dynamic time warping or DTW.
+
+DTW takes time, do have patience.
+To make the time not such an issue, I have put a flag here. 
+Comment out the following code chunk if you'd like to go on. 
+
+```{r exit here}
+#knitr::knit_exit()
+```
+
+#### Dynamic time warping (DTW)
+
+I use functionalities of the tsclust package so I don't have to program everything. 
+I do a partitional clustering with a window size of 10, i.e.~so 10 days are taken into account to calculate the distance matrix. 
+
+```{r dtw_partional}
+
+# time series clusters
+dtw_cluster <- tsclust(stocks_matrix, type="partitional", k=10,
+                      distance="dtw_basic",centroid = "pam",seed=1234,trace=TRUE,
+                      args = tsclust_args(dist = list(window.size = 10L)))
+plot(dtw_cluster)
+
+```
+
+Some of the most commen CVI have been programmed and can easily be assessed like this. 
+
+```{r cvi}
+# get cvi
+cvi(dtw_cluster)
+
+```
+
+#### Optimal number of clusters
+
+The CVI's can be used to determine the optimal number of clusters. 
+By explicitely varing the cluster size k we can scan the space for the optimal number of 
+clusters. 
+
+```{r dtw varing cluster sizes}
+
+# time series clusters
+dtw_cluster_2_30 <- tsclust(stocks_matrix, type="partitional", k=2:30,
+                      distance="dtw_basic",centroid = "pam",seed=1234,trace=TRUE,
+                      args = tsclust_args(dist = list(window.size = 10L)))
+#plot(dtw_cluster)
+
+```
+
+Then I use a very simple index - the sum of squares error - and try to find the elbow in 
+the plot below. 
+
+```{r optimal clusters}
+SSE <- data.frame(number_of_clusters = c(2:30), Sum_Squares_Error = NA)
+SSE$Sum_Squares_Error <- sapply(dtw_cluster_2_30, function(cl) { sum(cl@cldist ^ 2) })
+
+ggplot(SSE, aes(x=number_of_clusters, y=Sum_Squares_Error)) + geom_point() + 
+  geom_line() + xlab("Number of clusters k") + ylab("Sum of Squares Error") + 
+  scale_x_continuous(breaks=seq(0,30,2))
+```
+
+The best elbow is at 11 clusters. 
+
+```{r clustered_data optimal}
+
+plot(dtw_cluster_2_30[[10]])
+
+```
+
+Similarly we can use further CVIs to scan the space. This is part of your project work, and I won't explain it further here. 
+
+```{r cvi scan}
+# get cvi
+cvis <- t(sapply(dtw_cluster_2_30, cvi))
+head(cvis)
+tail(cvis)
+```
+
