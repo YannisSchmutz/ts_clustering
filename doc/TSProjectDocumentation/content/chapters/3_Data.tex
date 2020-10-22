@@ -10,8 +10,16 @@ The data comes form several medical sensors which are mounted to the bed of the 
 
 The source of the data for this project is stored in a database which implements a star-schema. The data is daily exported to CSV files for each proband using trivial join expressions.
 
+All time series are recorded from 8:00 PM to 10:00 AM.
+The sampling granularity is one second. However due to the sensors behaviour, some data points are missing every 30s.
+Due to the fine granularity this is negligible.
+
+If data would be sent every second without missing data, each time series would be $14\cdot3600 = 50400$ rows long. However the length is usually around 48000.
+
+\clearpage
 The given CSV then contains the following columns:
 
+\begin{multicols}{2}
 \begin{itemize}
   \item id
   \item heart\_rate
@@ -35,6 +43,7 @@ The given CSV then contains the following columns:
   \item minute
   \item second
 \end{itemize}
+\end{multicols}
 
 During the preparation and cleaning process the attributes "date", "hour", "minute" and "second" are used in order to create the timestamps.
 For now, the focus will lie on the features "heart\_rate" and "respiration\_rate".
@@ -44,10 +53,28 @@ For now, the focus will lie on the features "heart\_rate" and "respiration\_rate
 Due to the fact that real world data is used, some work has to to be put into data cleaning. This work is done in the Jupyter Notebook "TODO".
 
 
-\section{Data to use}
+The sensor sometimes is not able to detect a signal although the person is in bed. In such case it will send 0-values. Therefore the values of e.g \ac{hr} and \ac{rr} jump quite often to zero.
+
+However even if no heart rate or respiration rate can be detected, the \ac{mss} will produce a high value. Observations have shown, that if the \ac{mss} is below a given threshold (e.g 500) the bed is actually not occupied. In this case the zero-values sent by the sensor are legit. If the \ac{mss} is above the threshold but \ac{hr} and \ac{rr} are zero, this must be considered as missing value.
+
+The forward fill will produce a slight look ahead bias. But due to the fine granularity of the data and the downsampling to come, this is negligible.
+
+We replace these values using a custom forward fill. Figure \ref{fig:forward_fill_example} displays the original time series of \ac{hr} (blue) and the resulting time series after the forward fill algorithm.
+
+\begin{figure}[h!]
+	\includegraphics[width=1.1\textwidth]{/forward_fill_example.png}
+	\caption{Example of the forward fill output}
+	\label{fig:forward_fill_example}
+\end{figure}
+
+
+TODO: Resample (downsample).
+
+
+\section{Used time series}
 After cleaning the raw time series it will be available with the given format:
 
-todo!
+TODO: List of used time series.
 
 
 
