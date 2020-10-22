@@ -1,0 +1,55 @@
+\chapter{Data}
+
+This chapter describes the background of the data, how it is produced and the expected format.
+
+\section{Source}
+The data comes form several medical sensors which are mounted to the bed of the corresponding proband. The sensors send their data in configured intervals to a data pipeline. The pipeline then transforms the data and then saves it in a Postgres DB.
+
+\section{Format}
+\label{c:data_format}
+
+The source of the data for this project is stored in a database which implements a star-schema. The data is daily exported to CSV files for each proband using trivial join expressions.
+
+The given CSV then contains the following columns:
+
+\begin{itemize}
+  \item id
+  \item heart\_rate
+  \item respiration\_rate
+  \item relative\_stroke\_volume
+  \item heart\_rate\_variability
+  \item measured\_signal\_strength
+  \item status
+  \item b2b1
+  \item b2b2
+  \item b2b3
+  \item date
+  \item day
+  \item month
+  \item year
+  \item location\_name
+  \item room
+  \item patient
+  \item sensor
+  \item hour
+  \item minute
+  \item second
+\end{itemize}
+
+During the preparation and cleaning process the attributes "date", "hour", "minute" and "second" are used in order to create the timestamps.
+For now, the focus will lie on the features "heart\_rate" and "respiration\_rate".
+
+
+\section{Cleaning}
+Due to the fact that real world data is used, some work has to to be put into data cleaning. This work is done in the Jupyter Notebook "TODO".
+
+
+\section{Data to use}
+After cleaning the raw time series it will be available with the given format:
+
+todo!
+
+
+
+
+

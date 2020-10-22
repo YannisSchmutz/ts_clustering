@@ -1,0 +1,32 @@
+\chapter{Reference Data}
+
+Blablabsdjkfb
+
+
+\section{Foo}
+
+
+
+\begin{table}[h!]
+\centering
+\resizebox{\textwidth}{!}{
+	\begin{tabular}{|c|c|c|c|c|}\hline%
+		% specify table head
+		\bfseries timestamp & 
+		\bfseries heart\_rate\_1 &
+		\bfseries respiration\_rate\_1 &
+		\bfseries heart\_rate\_2 &
+		\bfseries respiration\_rate\_2
+		
+		\csvreader[]{\myCleanedCsvDataPath/reference/ref_1hour.csv}{
+			1=\myTS,2=\myHRa,3=\myRRa,
+			4=\myHRb,5=\myRRb} % specify your columns here
+			{\\\hline\myTS & \myHRa & \myRRa & 
+			\myHRb & \myRRb}
+		\\\hline	
+	\end{tabular}
+}
+\caption{Reference timeseries 1 hour}
+\label{tab:ref_ts_1h}
+\end{table}
+
