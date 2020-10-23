@@ -1,18 +1,59 @@
 \chapter{Introduction}
 
-BlaaaaBlaaa
+This paper the result of a project wich was done in the subject "Clustering of Time Series Data" at the \ac{bfh}.
+
 
 \section{Initial position}
 
-BlaaaaBlaaa
+The IT start up Netfire GmbH, which is the employer of the author, currently works on a customer's order in the health-care sector. The customer has several stations in Switzerland for in-house patients. Some of those patients must not leave their bed alone without the help of a nurse. Others sometimes are very nervous during the night, may have a seizure or even harm them self.
+Therefore the nurses enter each room every two hours during the night shift in order to check on the patients. Often however, patients will wake up due to the nurse stepping into the room.
+
+These circumstances lead to the customer's need for a solution which recognises the different behaviours of their patients.
+
+In order to do so, a sensor had been evaluated which shall help to solve this problem. The sensor is able to measure among others the \ac{hr} as well as the \ac{rr} of a patient.
 
 
+Netfire is currently in the development phase of this order and collects test-data from several probands on a daily basis.
+
+\clearpage
 \section{Project goal}
 
-BlaaaaBlaaa
+The ultimate goal of this project would be to recognise and distinguish the following situations using unsupervised learning methods:
 
-TODO: Explain the structure of the repo.
+\begin{itemize}
+  \item Is a person currently in bed
+  \item Is the person sleeping or not
+  \item Does the person sleep deeply or not (e.g \ac{rem} phase)
+  \item How long is the person out of bed
+  \item What was the status before the person left the bed
+  \item Is the person in bed but very nervous
+\end{itemize}
 
+In order to distinguish those situations, subsequence clustering algorithms had to be used. However such algorithms are not part of this course. Therefore the focus will lie on getting familiar with time series, distance measuring methods, \acp{cvi} and whole time series clustering algorithms in general.
+
+
+\clearpage
 \section{Requirements}
 
-Bluuuu
+This piece of work has to fulfil the following requirements.
+
+\begin{itemize}
+  \item The chosen data set must consist of at least 50 different time series
+  \item Each time series must contain at least 50 timestamps
+  \item At least the distance measures Euclidean and \ac{dtw} have to be implemented.
+  \item At least three different \acp{cvi} have to be used in order to determine the number of clusters.
+  \begin{itemize}
+  	\item At least one \ac{cvi} must not be used by another group
+  	\item The explanation of the chosen \ac{cvi} must be understandable for laypeople
+  \end{itemize}
+  \item Insights and results have to be well documented and visualised
+  \item An additional distance measure has to be implemented and documented.
+  \begin{itemize}
+  	\item The chosen measure must not be used by another group
+  	\item The explanation of the chosen measure must be understandable for laypeople
+  \end{itemize}
+  \item The results of this project has to be presented.
+  \item The paper has to be written in LaTeX
+  
+\end{itemize}
+
