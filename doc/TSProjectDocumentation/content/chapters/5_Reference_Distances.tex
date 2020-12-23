@@ -15,12 +15,20 @@ The Euclidean Distance between the \ac{hr} time series is: \textbf{0.198673}
 The Euclidean Distance between the \ac{rr} time series is: \textbf{0.316962}
 
 
+The Euclidean Distance between the \ac{mss} time series is: \textbf{0.285505}
+
+
 \subsection{DTW}
 
 The distance using \ac{dtw} between the \acp{hr} values is: \textbf{0.198673}
 
 
 The distance using \ac{dtw} between the \acp{rr} values is: \textbf{0.316962}
+
+
+The distance using \ac{dtw} between the \acp{mss} values is: \textbf{0.285505}
+
+
 
 \begin{figure}[h!]
 	\includegraphics[width=1\textwidth]{ref_1hour_hr_dtw.png}
@@ -44,6 +52,11 @@ The Euclidean Distance between the \ac{hr} time series is: \textbf{0.369976}
 The Euclidean Distance between the \ac{rr} time series is: \textbf{0.775827}
 
 
+
+The Euclidean Distance between the \ac{mss} time series is: \textbf{0.508129}
+
+
+
 \subsection{DTW}
 
 The distance using \ac{dtw} between the \acp{hr} values is: \textbf{0.327602}
@@ -51,8 +64,13 @@ The distance using \ac{dtw} between the \acp{hr} values is: \textbf{0.327602}
 
 The distance using \ac{dtw} between the \acp{rr} values is: \textbf{0.775718}
 
+
+The distance using \ac{dtw} between the \acp{mss} values is: \textbf{0.508129}
+
+
+
 \begin{figure}[h!]
-	\includegraphics[width=0.7\textwidth]{ref_30min_hr_dtw.png}
+	\includegraphics[width=0.6\textwidth]{ref_30min_hr_dtw.png}
 	\caption{DTW visualisation (HR, 30min granularity)}
 	\label{fig:ref_dtw_dist_30_min_granularity}
 \end{figure}
@@ -71,6 +89,9 @@ The Euclidean Distance between the \ac{hr} time series is: \textbf{2.095002}
 The Euclidean Distance between the \ac{rr} time series is: \textbf{3.644268}
 
 
+The Euclidean Distance between the \ac{mss} time series is: \textbf{1.993386}
+
+
 \subsection{DTW}
 
 The distance using \ac{dtw} between the \acp{hr} values is: \textbf{1.600346}
@@ -78,8 +99,13 @@ The distance using \ac{dtw} between the \acp{hr} values is: \textbf{1.600346}
 
 The distance using \ac{dtw} between the \acp{rr} values is: \textbf{2.585769}
 
+
+The distance using \ac{dtw} between the \acp{mss} values is: \textbf{1.674696}
+
+
+
 \begin{figure}[h!]
-	\includegraphics[width=0.7\textwidth]{ref_5min_hr_dtw.png}
+	\includegraphics[width=0.6\textwidth]{ref_5min_hr_dtw.png}
 	\caption{DTW visualisation (HR, 5min granularity)}
 	\label{fig:ref_dtw_dist_5_min_granularity}
 \end{figure}
@@ -102,6 +128,10 @@ The Euclidean Distance between the \ac{hr} time series is: \textbf{7.455447}
 The Euclidean Distance between the \ac{rr} time series is: \textbf{10.56793}
 
 
+The Euclidean Distance between the \ac{mss} time series is: \textbf{11.502093}
+
+
+
 \subsection{DTW}
 
 The distance using \ac{dtw} between the \acp{hr} values is: \textbf{3.888863}
@@ -109,8 +139,12 @@ The distance using \ac{dtw} between the \acp{hr} values is: \textbf{3.888863}
 
 The distance using \ac{dtw} between the \acp{rr} values is: \textbf{5.810633}
 
+
+The distance using \ac{dtw} between the \acp{mss} values is: \textbf{5.575821}
+
+
 \begin{figure}[h!]
-	\includegraphics[width=0.7\textwidth]{ref_1min_hr_dtw.png}
+	\includegraphics[width=0.6\textwidth]{ref_1min_hr_dtw.png}
 	\caption{DTW visualisation (HR, 1min granularity)}
 	\label{fig:ref_dtw_dist_1_min_granularity}
 \end{figure}
@@ -124,25 +158,28 @@ Table \ref{tab:ref_dist_compare} provides an overview over the calculated refere
 \begin{table}[h!]
 \centering
 \resizebox{\textwidth}{!}{
-	\begin{tabular}{|c|c|c|c|c|}\hline
+	\begin{tabular}{|c||c|c||c|c||c|c|}\hline
 		{} &  
-		\multicolumn{2}{|c|}{\textbf{\ac{hr}}} & 
-		\multicolumn{2}{|c|}{\textbf{\ac{rr}}}\\
+		\multicolumn{2}{|c||}{\textbf{\ac{hr}}} & 
+		\multicolumn{2}{|c||}{\textbf{\ac{rr}}} & 
+		\multicolumn{2}{|c|}{\textbf{\ac{mss}}}\\
 		\hline
 		% specify table head
 		\bfseries Granularity & 
 		\bfseries Euclidean &
 		\bfseries \ac{dtw} &
 		\bfseries Euclidean &
+		\bfseries \ac{dtw} &
+		\bfseries Euclidean &
 		\bfseries \ac{dtw} \\
 		\hline\hline
-		1 Hour & 0.198673 & 0.198673 & 0.316962 & 0.316962 \\
+		1 Hour & 0.198673 & 0.198673 & 0.316962 & 0.316962 & 0.285505 & 0.285505 \\
 		\hline
-		30 Min & 0.369976 & 0.327602 & 0.775827 & 0.775718 \\
+		30 Min & 0.369976 & 0.327602 & 0.775827 & 0.775718 & 0.508129 & 0.508129 \\
 		\hline
-		5 Min & 2.095002 & 1.600346 & 3.644268 & 2.585769 \\
+		5 Min & 2.095002 & 1.600346 & 3.644268 & 2.585769 & 1.993386 & 1.674695 \\
 		\hline
-		1 Min & 7.455447 & 3.888863 & 10.56793 & 5.810633 \\
+		1 Min & 7.455447 & 3.888863 & 10.56793 & 5.810633 & 11.502094 & 5.575821 \\
 		\hline
 
 	\end{tabular}
