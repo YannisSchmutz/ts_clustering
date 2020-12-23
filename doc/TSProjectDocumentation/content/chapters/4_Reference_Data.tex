@@ -28,7 +28,8 @@ The reference time series are available in different granularities
 In order to create those granularities the raw time series had to be downsampled.
 Missing observations were replaced using the custom forward fill algorithm. Then the data was resampled to the given granularity using a rolling mean approach.
 
-The cleaning and creating of the reference data was done in the Jupyter Notebook "CleanReferenceData.ipynb".
+The cleaning and creating of the reference data was done in the Jupyter Notebook 
+\newline \path{CleanReferenceData.ipynb}.
 
 
 \section{One Hour Granularity}
@@ -42,23 +43,26 @@ Table \ref{tab:ref_ts_one_h_granularity} gives an example on how the correspondi
 	\label{fig:ref_ts_one_h_granularity}
 \end{figure}
 
+\clearpage
 
 \begin{table}[h!]
 \centering
 \resizebox{\textwidth}{!}{
-	\begin{tabular}{|c|c|c|c|c|}\hline%
+	\begin{tabular}{|c|c|c|c|c|c|c|}\hline%
 		% specify table head
 		\bfseries timestamp & 
-		\bfseries heart\_rate\_1 &
-		\bfseries respiration\_rate\_1 &
-		\bfseries heart\_rate\_2 &
-		\bfseries respiration\_rate\_2
+		\bfseries hr1 &
+		\bfseries rr1 &
+		\bfseries mss1 &
+		\bfseries hr2 &
+		\bfseries rr2 &
+		\bfseries mss2
 		
-		\csvreader[]{\myCleanedCsvDataPath/reference/ref_1hour.csv}{
-			1=\myTS,2=\myHRa,3=\myRRa,
-			4=\myHRb,5=\myRRb} % specify your columns here
-			{\\\hline\myTS & \myHRa & \myRRa & 
-			\myHRb & \myRRb}
+		\csvreader[]{\myCleanedCsvDataPath/reference/ref_1hour_cropped.csv}{
+			1=\myTS, 2=\myHRa, 3=\myRRa, 4=\myMSSa,
+			5=\myHRb, 6=\myRRb, 7=\myMSSb} % specify your columns here
+			{\\\hline\myTS & \myHRa & \myRRa & \myMSSa &
+			\myHRb & \myRRb & \myMSSb}
 		\\\hline	
 	\end{tabular}
 }
@@ -100,7 +104,7 @@ This data is stored in \path{src/data/cleaned/reference/ref_5min.csv}
 
 
 \clearpage
-\section{One Minutes Granularity}
+\section{One Minute Granularity}
 
 Figure \ref{fig:ref_ts_1_m_granularity} visualises the downsampled granularity of the one minute reference time series.
 

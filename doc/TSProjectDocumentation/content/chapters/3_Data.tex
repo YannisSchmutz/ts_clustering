@@ -50,12 +50,12 @@ For now, the focus will lie on the features "heart\_rate" and "respiration\_rate
 
 
 \section{Cleaning}
-Due to the fact that real world data is used, some work has to to be put into data cleaning. This work is done in the Jupyter Notebook "TODO".
+Due to the fact that real world data is used, some work has to to be put into data cleaning. This work is done in the Jupyter Notebook "CleanAllRawData.ipynb". It is well documented so have a look at it for more information.
 
 
 The sensor sometimes is not able to detect a signal although the person is in bed. In such case it will send 0-values. Therefore the values of e.g \ac{hr} and \ac{rr} jump quite often to zero.
 
-However even if no heart rate or respiration rate can be detected, the \ac{mss} will produce a high value. Observations have shown, that if the \ac{mss} is below a given threshold (e.g 500) the bed is actually not occupied. In this case the zero-values sent by the sensor are legit. If the \ac{mss} is above the threshold but \ac{hr} and \ac{rr} are zero, this must be considered as missing value.
+However even if no heart rate or respiration rate can be detected, the \ac{mss} will produce a high value. Observations have shown, that if the \ac{mss} is below a given threshold (e.g 715) the bed is actually not occupied. In this case the zero-values sent by the sensor are legit. If the \ac{mss} is above the threshold but \ac{hr} and \ac{rr} are zero, this must be considered as missing value.
 
 The forward fill will produce a slight look ahead bias. But due to the fine granularity of the data and the downsampling to come, this is negligible.
 
@@ -68,15 +68,45 @@ We replace these values using a custom forward fill. Figure \ref{fig:forward_fil
 \end{figure}
 
 
-TODO: Resample (downsample).
+\newpage
+Running time series clustering algorithms is very expensive (regarding computation costs). Therefore the datasets have to been downsampled to different granularities. At the moment the granularities 
+
+\begin{itemize}
+	\item 1 hour
+	\item 30 minutes
+	\item 5 minutes
+	\item 1 minute
+\end{itemize}
+
+are provided.
+
 
 
 \section{Used time series}
-After cleaning the raw time series it will be available with the given format:
-
-TODO: List of used time series.
+After cleaning the raw time series it will be available with the rows \textbf{timestamp}, \textbf{heart rate}, \textbf{respiration rate}, \textbf{mss} and \textbf{patient}. As shown in table \ref{tab:example_ts_one_h_granularity}.
 
 
+\begin{table}[h!]
+\centering
+\resizebox{\textwidth}{!}{
+	\begin{tabular}{|c|c|c|c|c|}\hline%
+		% specify table head
+		\bfseries timestamp & 
+		\bfseries heart\_rate &
+		\bfseries respiration\_rate &
+		\bfseries mss &
+		\bfseries patient
+		
+		\csvreader[]{\myCleanedCsvDataPath/samples50/one_hour/yyyyy_1.csv}{
+			1=\myTS,2=\myHR,3=\myRR,
+			4=\myMSS,5=\myPAT} % specify your columns here
+			{\\\hline\myTS & \myHR & \myRR & 
+			\myMSS & \myPAT}
+		\\\hline	
+	\end{tabular}
+}
+\caption{Example One hour granularity data}
+\label{tab:example_ts_one_h_granularity}
+\end{table}
 
-
-
+For every granularity there are 50 different time series stored in \path{src/data/cleaned/samples/}. Four of them had been synthetically generated using the jupyter notebook "synth\_data\_generator.ipynb". This was necessary because four data sets had to be discarded during the data cleaning process.
