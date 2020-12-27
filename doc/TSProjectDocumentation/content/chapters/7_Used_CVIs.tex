@@ -1,0 +1,94 @@
+\chapter{Used Cluster Validity Indices}
+
+This chapter describes the \acp{cvi} which were used during this project. The Calinski Harabasz score will be more focused on because it was chosen specially for the assessment.
+
+\section{Silhouette}
+
+The Silhouette score $s(i)$ of a single sample $i$ is calculated using the mean intra-cluster distance $a(i)$ and the mean nearest-cluster distance $b(i)$.
+
+$$ s(i) = \frac{b(i) - a(i)}{\text{max}(a(i), b(i))} $$
+$$ s(i) \in [-1, 1] : \text{1 being the ideal score}$$
+
+The overall Silhouette Coefficient $s$ is the mean of all samples $n$.
+
+$$ s = \frac{1}{n} \sum_{i=1}^{n}\frac{b(i) - a(i)}{\text{max}(a(i), b(i))} $$
+
+
+\clearpage
+\section{Davides Bouldin}
+
+The Davides Bouldin score $db$ is defined as the average similarity measure of each cluster with its most similar cluster. The similarity is defined as the ratio of within-cluster distances to between-cluster distances. 
+
+
+The minimal and optimal value for this score is zero.
+
+
+$$ db = \frac{1}{k} \sum_{i=1}^{k} \text{max}_{j \neq i} \left(\frac{\sigma_{i} + \sigma_{j}}{d(c_{i}, c_{j})}\right)$$
+
+$$k: \text{Number of clusters}$$
+$$c_{x}: \text{Centroid of cluster} x$$
+$$\sigma_{x}: \text{Average distance of all elements in cluster x to centroid x}$$
+$$d(c_{i}, c_{j}): \text{Distance from centroid i to centroid j}$$
+
+
+
+
+\section{Dunn Index}
+
+The Dunn index is defined as the ratio of the minimal distance between a cluster pair within all clusters to the maximum inner-cluster distance.
+
+$$ D = \frac{ \text{min}_{1\leq i < j\leq n} d(i,j) }{ \text{max}_{1 \leq k \leq n} d'(k) } $$
+$$ d(i,j) : \text{Distance between cluster i and j}$$
+$$d'(k) : \text{Intra-cluster distance in cluster k}$$
+
+
+\clearpage
+\section{Calinski Harabasz Score}
+\subsection{Simple Explanation}
+
+
+The Calinski Harabasz Score, also called \textbf{Variance Ratio Criterion}, is an internal evaluation method. Hence it only operates on the data which had been clustered itself and does not require some kind of ground truth. 
+
+
+The score is defined as ratio of \textbf{between-cluster dispersion mean} to the \textbf{within-cluster dispersion}.
+Simply put:
+
+$$ CH = \frac{\text{Dispersion between clusters}}{\text{Dispersion within a cluster}}  $$
+
+For clustering in general we want to have a very dense distribution of all elements within a given cluster. The clusters itself should be well separated.
+
+If we apply this to the pseudo-formula above, the numerator \textbf{"Dispersion between clusters"} becomes large and the denominator \textbf{"Dispersion within a cluster"} becomes small. Hence, the higher the $CH$ score becomes, the better. 
+
+
+
+\clearpage
+\subsection{Mathematical Explanation}
+
+The Calinski Harabasz Score is mathematically defined like followed:
+
+
+$$ CH(k) = \frac{B(k)}{W(k)} \times \frac{n_{E} - k}{k - 1} $$
+
+$$ E : \text{Data set} $$
+$$ n_{E} : \text{Number of data points in the set } E $$
+$$ k : \text{Number of clusters} $$
+$$ c_{E} : \text{Center of the data set} $$
+$$ C_{q} : \text{Set of points in cluster } q $$
+$$ c_{q} : \text{Center (centroid) of cluster } q $$
+$$ n_{q} : \text{Number of points in cluster } q $$
+$$p_{i}^{\{k\}} : \text{Data point } i \text{ in a cluster } k $$
+
+The within-cluster dispersion $W(k)$ is the sum of the squared distances between each data point $p_{i}^{\{q\}}$ of the cluster $q$ to the cluster's centroid $c_{q}$, for each cluster $k$.
+
+$$ W(k) = \sum_{q=0}^{k-1} \sum_{p \in C_{q}} |p - c_{q}|^{2} $$
+
+
+The between-cluster dispersion $B(K)$ is the weighted sum of squared distances between the center of the data set $c_{E}$ to the center $c_{q}$ of the cluster $q$, for each cluster $k$. The weight is equal to the number of points $n_{q}$ in the corresponding cluster.
+
+
+$$ B(k) = \sum_{q = 0}^{k - 1} n_{q} |c_{q} - c_{E}|^{2} $$
+
+
+
+
+
