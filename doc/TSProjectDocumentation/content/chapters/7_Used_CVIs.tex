@@ -64,7 +64,7 @@ If we apply this to the pseudo-formula above, the numerator \textbf{"Dispersion 
 \clearpage
 \subsection{Mathematical Explanation}
 
-The Calinski Harabasz Score is mathematically defined like followed:
+The Calinski Harabasz Score is mathematically defined as followed:
 
 
 $$ CH(k) = \frac{B(k)}{W(k)} \times \frac{n_{E} - k}{k - 1} $$
@@ -76,14 +76,14 @@ $$ c_{E} : \text{Center of the data set} $$
 $$ C_{q} : \text{Set of points in cluster } q $$
 $$ c_{q} : \text{Center (centroid) of cluster } q $$
 $$ n_{q} : \text{Number of points in cluster } q $$
-$$p_{i}^{\{k\}} : \text{Data point } i \text{ in a cluster } k $$
+$$p_{i}^{\{q\}} : \text{Data point } i \text{ in a cluster } q $$
 
-The within-cluster dispersion $W(k)$ is the sum of the squared distances between each data point $p_{i}^{\{q\}}$ of the cluster $q$ to the cluster's centroid $c_{q}$, for each cluster $k$.
+The within-cluster dispersion $W(k)$ is the sum of the squared distances between each data point $p_{i}^{\{q\}}$ of the cluster $q$ to the cluster's centroid $c_{q}$, for each cluster.
 
 $$ W(k) = \sum_{q=0}^{k-1} \sum_{p \in C_{q}} |p - c_{q}|^{2} $$
 
 
-The between-cluster dispersion $B(K)$ is the weighted sum of squared distances between the center of the data set $c_{E}$ to the center $c_{q}$ of the cluster $q$, for each cluster $k$. The weight is equal to the number of points $n_{q}$ in the corresponding cluster.
+The between-cluster dispersion $B(K)$ is the weighted sum of squared distances between the center of the data set $c_{E}$ to the center $c_{q}$ of the cluster $q$, for each cluster. The weight is equal to the number of points $n_{q}$ in the corresponding cluster.
 
 
 $$ B(k) = \sum_{q = 0}^{k - 1} n_{q} |c_{q} - c_{E}|^{2} $$

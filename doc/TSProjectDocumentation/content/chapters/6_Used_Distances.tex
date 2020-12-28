@@ -1,0 +1,106 @@
+\chapter{Used Distance Measures}
+
+This chapter describes the distance measures which were used during this project. The TOOODOOO distance will be more focused on because it was chosen specially for the assessment.
+
+\section{Euclidean Distance}
+
+$$ d_{Eukl}(X,Y) = \sqrt{\sum_{i=1}^{n} (x_{i} - y_{i})^{2} } $$
+
+\section{Dynamic-Time-Warping}
+
+
+
+$$ d_{DTW}(X,Y) = \text{min}\left( \sum_{k=1}^{K}w_{k} \right) $$
+
+$$ w_{k} : \text{The k-th element in the warping path} $$
+
+\section{Cosine Distance}
+
+
+
+$$ d_{cos}(A,B) = 1 - \frac{AB}{|A|\times|B|} 
+                  = 1 - \frac{\sum_{i=1}^{n} a_{i}\times b_{i}}
+                  { \sqrt{ \sum_{i=1}^{n} a_{i}^{2} } \times \sqrt{ \sum_{i=1}^{n} b_{i}^{2} } } $$
+
+
+\clearpage
+\section{Normalized Compression Distance}
+\subsection{Simple Explanation}
+
+The \ac{ncd} is a way to measure the dissimilarity of various objects. In practice it is often used in order to cluster documents, emails or even malware.
+
+
+The NCD function takes two elements as an input and returns a number between zero and one. This number indicates how different the two objects are. A small number (close to zero) means that the objects are quite similar. The higher (the closer to one) the output becomes, the more different both objects are.
+
+
+As the name indicates, \ac{ncd} uses compression algorithms in order to calculate the distance of two objects (e.g "gzip"). Both objects have to be represented as a binary string. NCD then simply uses the length of the compressed objects as well as the length of the compression of both objects chained together.
+
+The following Python code gives an example on how NCD could be implemented.
+
+\begin{lstlisting}[language=Python]
+#!/usr/bin/env python
+__author__  = "Yannis Schmutz"
+__version__ = "0.1.0"
+__email__   = "schmy3@bfh.ch"
+__status__  = "Dev"
+
+import gzip
+
+
+def __compressed_length(obj : bytes):
+    # Return the length of the compressed byte-string
+    return len(gzip.compress(obj))
+
+
+def ncd(o1 : str, o2 : str) -> float:
+    # Convert both objects to bytes
+    x = o1.encode('ascii')
+    y = o2.encode('ascii')
+
+    # Get length of compressed objects
+    cx = __compressed_length(x)
+    cy = __compressed_length(y)
+    # Get length of compressed objects chained together
+    cxy = __compressed_length(x + y)
+
+    # Calculate normalized distance
+    d = (cxy - min(cx, cy))/max(cx, cy)
+    return d
+
+
+
+if __name__ == '__main__':
+    dist0 = ncd'aaa', 'aaa')
+    print(dist0)  # 0.0
+    
+    dist1 = ncd('aaa', 'aab')
+    print(dist1)  # 0.043478260869565216
+
+    dist2 = ncd('abc', 'xyz')
+    print(dist2)  # 0.13043478260869565
+
+    dist3 = ncd('Hello World!', 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.')
+    print(dist3)  # 0.8203125
+\end{lstlisting}
+
+
+As one can see in line 33, for two identical strings the NCD-distance is clearly zero. For two quite similar strings, the distance is still very close to zero. The bigger the differences of both strings become, the closer to one the output gets.
+
+
+Due to the fact that different compression algorithms can be used, NCD only describes a family of distance measurement functions.
+
+
+\subsection{Mathematical Explanation}
+
+Let $x \in \{0,1\}^{n_{1}}, y \in \{0,1\}^{n_{2}} : n_{1}, n_{2} \in \mathbf{N}$ be binary strings representing two objects whose distance shall be calculated. Further is $C(x)$ the length of the compressed version of $x$ using compressor $C$.
+
+Hence the NCD is calculated as followed:
+
+$$ NCD(x,y) = \frac{C(xy) - min\{ C(x), C(y) \}}{max\{C(x), C(y) \}} $$
+
+
+
+The normalization used for NCD strongly resembles the so called "Min-max feature scaling" $$X' = \frac{X - X_{min}}{X_{max} - X_{min}}$$.
+
+
+
