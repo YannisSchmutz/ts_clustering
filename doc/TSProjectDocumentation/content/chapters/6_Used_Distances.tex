@@ -97,10 +97,9 @@ Let $x \in \{0,1\}^{n_{1}}, y \in \{0,1\}^{n_{2}} : n_{1}, n_{2} \in \mathbf{N}$
 The NCD then is calculated as followed:
 
 $$ NCD(x,y) = \frac{C(xy) - min\{ C(x), C(y) \}}{max\{C(x), C(y) \}} $$
+$$ NCD(x,y) \in [0,1] $$
 
+The more $x$ and $y$ are alike, the closer $C(xy)$ will become $min\{C(x), C(y)\}$ and therefore lets the whole equation approach zero.
 
 
 The normalization used for NCD strongly resembles the so called "Min-max feature scaling" $$X' = \frac{X - X_{min}}{X_{max} - X_{min}}$$.
-
-
-
